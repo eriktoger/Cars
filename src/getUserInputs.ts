@@ -1,4 +1,16 @@
-import { EAST, NORTH, SOUTH, WEST } from "./constants";
+import {
+  EAST,
+  INVALID_ACTIONS_MESSAGE,
+  INVALID_DIRECTION_MESSAGE,
+  INVALID_NUMBERS_WIDTH_HEIGHT_MESSAGE,
+  INVALID_NUMBERS_X_Y_MESSAGE,
+  NORTH,
+  SOUTH,
+  WEST,
+  WIDTH_HEIGHT_MUST_BE_POSITIVE_MESSAGE,
+  X_Y_GREATER_THAN_ZERO_MESSAGE,
+  possibleActions,
+} from "./constants";
 import { Action, Direction } from "./types";
 
 const prompt = require("prompt-sync")({ sigint: true });
@@ -9,11 +21,11 @@ export function getUserInputs(promptFn = prompt) {
   const width = Number(widthString);
   const height = Number(heightString);
   if (isNaN(width) || isNaN(height)) {
-    console.error("Invalid input: Width, height must be valid numbers.");
+    console.error(INVALID_NUMBERS_WIDTH_HEIGHT_MESSAGE);
     process.exit(1);
   }
   if (width <= 0 || height <= 0) {
-    console.error("Invalid input: Width and height must be positive numbers.");
+    console.error(WIDTH_HEIGHT_MUST_BE_POSITIVE_MESSAGE);
     process.exit(1);
   }
 
@@ -26,26 +38,32 @@ export function getUserInputs(promptFn = prompt) {
   let y = Number(yString);
   let direction = directionString?.toUpperCase() as Direction;
 
-  if (isNaN(width) || isNaN(height) || isNaN(x) || isNaN(y)) {
-    console.error("Invalid input: X, and y must be valid numbers.");
+  if (isNaN(x) || isNaN(y)) {
+    console.error(INVALID_NUMBERS_X_Y_MESSAGE);
     process.exit(1);
   }
 
   if (x < 0 || y < 0) {
-    console.error("Invalid input: X and y must be zero or greater.");
+    console.error(X_Y_GREATER_THAN_ZERO_MESSAGE);
     process.exit(1);
   }
 
-  if (![NORTH, WEST, SOUTH, WEST].includes(direction)) {
-    console.error(
-      `Invalid input: Direction must be one of ${NORTH}, ${WEST}, ${SOUTH}, ${EAST}.`
-    );
+  if (![NORTH, WEST, SOUTH, EAST].includes(direction)) {
+    console.error(INVALID_DIRECTION_MESSAGE);
     process.exit(1);
   }
 
   const squenceInput =
     promptFn("A sequence of action commands (F B L R): ") ?? "";
-  const actions: Action[] = squenceInput.toUpperCase().split(" ");
+  const actions: Action[] = squenceInput
+    .toUpperCase()
+    .split(" ")
+    .filter((action: Action) => possibleActions.includes(action));
+
+  if (!actions.length) {
+    console.error(INVALID_ACTIONS_MESSAGE);
+    process.exit(1);
+  }
 
   return { width, height, x, y, direction, actions };
 }
