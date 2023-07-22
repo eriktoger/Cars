@@ -12,8 +12,11 @@ import {
   possibleActions,
 } from "./constants";
 import { Action, Direction } from "./types";
+import promptSync from "prompt-sync";
 
-const prompt = require("prompt-sync")({ sigint: true });
+const prompt = promptSync({
+  sigint: true,
+});
 
 export function getUserInputs(promptFn = prompt) {
   const roomInput = promptFn("Room input (width height): ") ?? "";
@@ -55,10 +58,12 @@ export function getUserInputs(promptFn = prompt) {
 
   const squenceInput =
     promptFn("A sequence of action commands (F B L R): ") ?? "";
-  const actions: Action[] = squenceInput
+  const actions = squenceInput
     .toUpperCase()
     .split(" ")
-    .filter((action: Action) => possibleActions.includes(action));
+    .filter((action: string) =>
+      possibleActions.find((pa) => pa === action)
+    ) as Action[];
 
   if (!actions.length) {
     console.error(INVALID_ACTIONS_MESSAGE);

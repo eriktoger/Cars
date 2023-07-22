@@ -12,10 +12,9 @@ import {
   X_Y_GREATER_THAN_ZERO_MESSAGE,
 } from "./constants";
 import { getUserInputs } from "./getUserInputs";
-const prompt = require("prompt-sync")();
 
 describe("getUserInputs", () => {
-  let mockPromptFn: jest.Mock<any, any, any>;
+  let mockPromptFn: any;
 
   beforeEach(() => {
     console.error = jest.fn();
@@ -26,13 +25,12 @@ describe("getUserInputs", () => {
   });
 
   test("should parse valid inputs correctly", () => {
-    const promptFn = jest.fn();
-    promptFn
+    mockPromptFn
       .mockReturnValueOnce("5 5")
       .mockReturnValueOnce(`2 3 ${NORTH}`)
       .mockReturnValueOnce(`${FORWARD} ${BACKWARD} ${LEFT} ${RIGHT}`);
 
-    const result = getUserInputs(promptFn);
+    const result = getUserInputs(mockPromptFn);
 
     expect(result.width).toBe(5);
     expect(result.height).toBe(5);
