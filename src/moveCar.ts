@@ -26,8 +26,6 @@ export function moveCar(
   direction: Direction,
   actions: Action[]
 ) {
-  let error = null;
-
   const incorrectInput =
     isNaN(width) ||
     isNaN(height) ||
@@ -45,38 +43,49 @@ export function moveCar(
     };
   }
 
+  let error = null;
+  let currentX = x;
+  let currentY = y;
+  let currentDirection = direction;
+
   for (const action of actions) {
-    if (calcOutOfBound(x, y, width, height)) {
+    if (calcOutOfBound(currentX, currentY, width, height)) {
       error = OUT_OF_BOUND;
       break;
     }
 
     if (action === LEFT || action === RIGHT) {
       const step = action === LEFT ? 1 : posssibleDirectionsLength - 1;
-      direction =
+      currentDirection =
         possibleDirections[
-          (possibleDirections.findIndex((pd) => pd === direction) + step) %
+          (possibleDirections.findIndex((pd) => pd === currentDirection) +
+            step) %
             posssibleDirectionsLength
         ];
     }
 
     if (action === FORWARD || action === BACKWARD) {
       const movement = action === FORWARD ? 1 : -1;
-      if (direction === NORTH) {
-        y += movement;
-      } else if (direction === EAST) {
-        x += movement;
-      } else if (direction === SOUTH) {
-        y -= movement;
-      } else if (direction === WEST) {
-        x -= movement;
+      if (currentDirection === NORTH) {
+        currentY += movement;
+      } else if (currentDirection === EAST) {
+        currentX += movement;
+      } else if (currentDirection === SOUTH) {
+        currentY -= movement;
+      } else if (currentDirection === WEST) {
+        currentX -= movement;
       }
     }
   }
 
-  if (calcOutOfBound(x, y, width, height)) {
+  if (calcOutOfBound(currentX, currentY, width, height)) {
     error = OUT_OF_BOUND;
   }
 
-  return { finalX: x, finalY: y, finalDirection: direction, error };
+  return {
+    finalX: currentX,
+    finalY: currentY,
+    finalDirection: currentDirection,
+    error,
+  };
 }
